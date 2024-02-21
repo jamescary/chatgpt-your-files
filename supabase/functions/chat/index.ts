@@ -58,11 +58,19 @@ Deno.serve(async (req) => {
     },
   });
 
-  const { messages, embedding } = await req.json();
+  const { messages, input } = await req.json();
+
+  const {
+    data: [{ embedding }],
+  } = await openai.embeddings.create({
+    model: "text-embedding-3-small",
+    input: input,
+    dimensions: 1024, // Generate an embedding with 1024 dimensions
+  });
 
   const { data: documents, error: matchError } = await supabase
     .rpc("match_document_sections", {
-      embedding,
+      embedding: JSON.stringify(Array.from(embedding)),
       match_threshold: 0.8,
     })
     .select("content")
