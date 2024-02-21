@@ -19,6 +19,7 @@ export const corsHeaders = {
 };
 
 Deno.serve(async (req) => {
+  console.log(req);
   // Handle CORS
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
@@ -60,18 +61,19 @@ Deno.serve(async (req) => {
 
   const { messages, input } = await req.json();
 
+  console.log("generating embedding from input:", input);
+
   const {
     data: [{ embedding }],
   } = await openai.embeddings.create({
-    model: "text-embedding-3-small",
+    model: "text-embedding-3-large",
     input: input,
-    dimensions: 1024, // Generate an embedding with 1024 dimensions
   });
 
   const { data: documents, error: matchError } = await supabase
-    .rpc("match_document_sections", {
-      embedding: JSON.stringify(Array.from(embedding)),
-      match_threshold: 0.8,
+    .rpc("match_documents_adaptive", {
+      query_embedding: JSON.stringify(Array.from(embedding)),
+      match_count: 10,
     })
     .select("content")
     .limit(5);

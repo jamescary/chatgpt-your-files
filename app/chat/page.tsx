@@ -11,11 +11,6 @@ import { useChat } from "ai/react";
 export default function ChatPage() {
   const supabase = createClientComponentClient<Database>();
 
-  // const generateEmbedding = usePipeline(
-  //   "feature-extraction",
-  //   "Supabase/gte-small",
-  // );
-
   const { messages, input, handleInputChange, handleSubmit, isLoading } =
     useChat({
       api: `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/chat`,

@@ -81,9 +81,8 @@ Deno.serve(async (req) => {
       const {
         data: [{ embedding }],
       } = await openai.embeddings.create({
-        model: "text-embedding-3-small",
+        model: "text-embedding-3-large",
         input: content,
-        dimensions: 1024, // Generate an embedding with 1024 dimensions
       });
 
       const { error } = await supabase

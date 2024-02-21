@@ -21,10 +21,10 @@ create table document_sections (
   id bigint primary key generated always as identity,
   document_id bigint not null references documents (id),
   content text not null,
-  embedding vector (1024)
+  embedding vector (3072)
 );
 
-create index on document_sections using hnsw (embedding vector_ip_ops);
+-- create index on document_sections using hnsw (embedding vector_ip_ops);
 
 alter table documents enable row level security;
 alter table document_sections enable row level security;
@@ -118,3 +118,36 @@ create trigger on_file_upload
   after insert on storage.objects
   for each row
   execute procedure private.handle_storage_update();
+
+create or replace function sub_vector(v vector, dimensions int)
+returns vector
+language plpgsql
+immutable
+as $$
+begin
+  if dimensions > vector_dims(v) then
+    raise exception 'dimensions must be less than or equal to the vector size';
+  end if;
+
+  return (
+    with unnormed(elem) as (
+      select x from unnest(v::float4[]) with ordinality v(x, ix)
+      where ix <= dimensions
+    ),
+    norm(factor) as (
+      select
+        sqrt(sum(pow(elem, 2)))
+      from
+        unnormed
+    )
+    select
+      array_agg(u.elem / r.factor)::vector
+    from
+      norm r, unnormed u
+  );
+end;
+$$;
+
+create index on document_sections
+using hnsw ((sub_vector(embedding, 512)::vector(512)) vector_ip_ops)
+with (m = 32, ef_construction = 400);
