@@ -25,7 +25,7 @@ export default function ChatPage() {
       api: `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/chat`,
     });
 
-  const isReady = !!openai;
+  const isReady = true;
 
   return (
     <div className="max-w-6xl flex flex-col items-center w-full h-full">
