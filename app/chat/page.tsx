@@ -18,7 +18,10 @@ export default function ChatPage() {
   // );
 
   const openAiKey = `${process.env.OPENAI_API_KEY}`;
-  const openai = new OpenAI({ apiKey: openAiKey });
+  const openai = new OpenAI({
+    apiKey: openAiKey,
+    dangerouslyAllowBrowser: true,
+  });
 
   const { messages, input, handleInputChange, handleSubmit, isLoading } =
     useChat({
