@@ -76,7 +76,7 @@ Deno.serve(async (req) => {
       match_count: 10,
     })
     .select("content")
-    .limit(5);
+    .limit(10);
 
   if (matchError) {
     console.error(matchError);
