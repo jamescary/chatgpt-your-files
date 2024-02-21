@@ -3,7 +3,6 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 // import { usePipeline } from '@/lib/hooks/use-pipeline';
-import { OpenAI } from "openai";
 import { cn } from "@/lib/utils";
 import { Database } from "@/supabase/functions/_lib/database";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
@@ -16,12 +15,6 @@ export default function ChatPage() {
   //   "feature-extraction",
   //   "Supabase/gte-small",
   // );
-
-  const openAiKey = `${process.env.OPENAI_API_KEY}`;
-  const openai = new OpenAI({
-    apiKey: openAiKey,
-    dangerouslyAllowBrowser: true,
-  });
 
   const { messages, input, handleInputChange, handleSubmit, isLoading } =
     useChat({
@@ -75,14 +68,6 @@ export default function ChatPage() {
             // }
 
             const {
-              data: [{ embedding }],
-            } = await openai.embeddings.create({
-              model: "text-embedding-3-small",
-              input: input,
-              dimensions: 1024, // Generate an embedding with 1024 dimensions
-            });
-
-            const {
               data: { session },
             } = await supabase.auth.getSession();
 
@@ -96,7 +81,7 @@ export default function ChatPage() {
                   authorization: `Bearer ${session.access_token}`,
                 },
                 body: {
-                  embedding: JSON.stringify(Array.from(embedding)),
+                  input,
                 },
               },
             });
