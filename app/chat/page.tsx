@@ -16,7 +16,7 @@ export default function ChatPage() {
   //   "feature-extraction",
   //   "Supabase/gte-small",
   // );
-  
+
   const openAiKey = `${process.env.OPENAI_API_KEY}`;
   const openai = new OpenAI({ apiKey: openAiKey });
 
@@ -93,7 +93,7 @@ export default function ChatPage() {
                   authorization: `Bearer ${session.access_token}`,
                 },
                 body: {
-                  JSON.stringify(Array.from(embedding)),
+                  embedding: JSON.stringify(Array.from(embedding)),
                 },
               },
             });
