@@ -74,7 +74,7 @@ Deno.serve(async (req) => {
   }
 
   const fileContents = await file.text();
-  const processedMd = processMarkdown(fileContents);
+  const processedMd = processMarkdown(fileContents, 1000);
 
   const { error } = await supabase.from("document_sections").insert(
     processedMd.sections.map(({ content }) => ({
